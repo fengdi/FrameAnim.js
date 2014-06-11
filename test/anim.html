@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>叮叮猫设计专用-帧动画调试工具</title>
+    <style>
+        html,body{
+            height: 100%;
+            background-color: #efefef;
+        }
+        .workspace{
+            text-align: center;
+            vertical-align: middle;
+            width: 100%;
+            height: 100%;
+
+        }
+        .workspace td{
+            vertical-align: middle;
+        }
+        .film,#filmImg{
+            margin: 0 auto;
+        }
+        .settings{
+            width: 500px;
+            margin: 0 auto;
+        }
+        .settings table{
+            text-align: left;
+        }
+        .settings table td{
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+<table class="workspace">
+    <tr>
+        <td>
+            <div class="film">
+                <div id="filmImg">
+                    
+                </div>
+            </div>
+            
+            <button id="start">开始</button>
+            <button id="stop">停止</button>
+            <button id="restart">重新开始</button>
+
+            <div class="settings">
+                <table>
+                    <tr>
+                        <td>
+                            <label for="img">(胶卷)图片</label>
+                        </td>
+                        <td>
+                            <input type="text" id="img" value="test.jpg">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="position">播放方式</label>
+                        </td>
+                        <td>
+                            <select id="position">
+                                <option value="x" selected="selected">水平</option>
+                                <option value="y">垂直</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="fc">帧数</label>
+                        </td>
+                        <td>
+                            <input type="text" id="fc" value="8">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="width">影片宽</label>
+                        </td>
+                        <td>
+                            <input type="text" id="width" value="200">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="height">影片高</label>
+                        </td>
+                        <td>
+                            <input type="text" id="height" value="300">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="speed">播放速度</label>
+                        </td>
+                        <td>
+                            <input type="range" class="js-range" id="speed" value="80" step="10" min="10" max="400"><span class="js-value">80</span>毫秒每帧
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="loop">循环次数</label>
+                        </td>
+                        <td>
+                            <input type="range" class="js-range" id="loop" value="-1" step="1" min="-1" max="10"><span class="js-value">-1</span>次（-1代表无限循环）
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button id="save">更新</button>
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>
+<script src="jquery.js"></script>
+<script src="../f.source.js"></script>
+<script type="text/javascript">
+
+jQuery(function($){
+
+    $(".js-range").on("change",function(){
+        $(this).next(".js-value").text(this.value);
+    });
+
+    var img = $("#img").val();
+    var width = $("#width").val();
+    var height = $("#height").val();
+    var position = $("#position").val();
+    var fc = $("#fc").val();
+    var speed = $("#speed").val();
+    var loop = $("#loop").val();
+
+    var fa = new FrameAnim($('#filmImg')[0],{
+        image:img,
+        width:width,
+        height:height,
+        frames:fc|0,
+        speed:speed,
+        position:position,
+        loop:loop
+    });
+
+    $("#filmImg").width(width).height(height).css({'background-image':"url("+img+")"});
+    fa.onStatus(function(s){
+        console.log(s);
+    });
+
+
+    $("#save").click(function() {
+        var img = $("#img").val();
+        var width = $("#width").val();
+        var height = $("#height").val();
+        var position = $("#position").val();
+        var fc = $("#fc").val();
+        var speed = $("#speed").val();
+        var loop = $("#loop").val();
+
+        fa.settings.image = img;
+        fa.settings.width = width;
+        fa.settings.height = height;
+        fa.settings.frames = fc|0;
+        fa.settings.speed = speed;
+        fa.settings.position = position;
+        fa.settings.loop = loop;
+
+        $("#filmImg").width(width).height(height).css({'background-image':"url("+img+")"});
+
+        fa.init(true);
+        // fa.data.forEach(function(z){
+        //     z.time(speed);
+        // });
+
+    });
+
+    $("#start").click(function(){
+        fa.start();
+    });
+    $("#stop").click(function(){
+        fa.stop();
+    });
+    $("#restart").click(function(){
+        fa.start(0,1);
+    });
+
+
+
+});
+
+
+</script>
